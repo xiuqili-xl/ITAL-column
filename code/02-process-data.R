@@ -162,10 +162,25 @@ nrow(reseachsquare_data)                      # 299,916
 unique(reseachsquare_data$journal_title)      # Include more than Research Square
 reseachsquare_data %>% count(article_type)    # 299915 preprints, 1 article
 
-# summary statistics
+## summary statistics
 reseachsquare_stats <- reseachsquare_data %>% 
   count(publication_year, publication_month)
 
 write_csv(reseachsquare_stats, here("outputs_stats", "researchsquare_openalex_stats.csv"))
 
 
+
+# SciELO -----
+# SciELO includes more than preprints, thus we need to do an additional level of filtering
+# data pulled from OpenAlex on 2026-10-26 
+scielo_data <- load_preprint_data(subdirectory = "scielo")
+
+## in our analysis, we'll include articles either marked as preprint or has "scieloprepints" in doi
+scielo_cleaned_data <- scielo_data %>%
+  filter(article_type == "preprint" | str_detect(doi, "scielopreprints"))
+
+## summary statistics
+scielo_stats <- scielo_cleaned_data %>%
+  count(publication_year, publication_month)
+
+write_csv(scielo_stats, here("outputs_stats", "scielo_openalex_stats.csv"))

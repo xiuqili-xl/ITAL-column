@@ -151,7 +151,7 @@ oa_preprint(preprint_name = "ecoevorxiv", doi_prefix = "10.32942", time_seg = "q
 # Retrieve data for Research Square ----
 # Research Square was established in 2013, and acquired by Nature in 2022
 # prior to 2018, Research Square did not mint DOI
-# data pulled from OpenAlex on 2026-01-01
+# data pulled from OpenAlex on 2026-10-26
 oa_preprint(preprint_name = "researchsquare", doi_prefix = "10.21203", time_seg = "quarter",
             start_date = "2013-01-01", end_date = "2020-01-01")
 
@@ -160,3 +160,8 @@ oa_preprint(preprint_name = "researchsquare", doi_prefix = "10.21203", time_seg 
 
 
 
+# Retrieve data for SciELO ----
+# SciELO includes more than preprints; SciELO Preprints was launched in Apr 2020
+# data pulled from OpenAlex on 2026-10-26
+oa_preprint(preprint_name = "scielo", doi_prefix = "10.1590", time_seg = "quarter",
+            start_date = "2020-01-01", end_date = "2026-10-01")
