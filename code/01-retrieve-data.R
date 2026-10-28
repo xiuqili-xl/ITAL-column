@@ -66,7 +66,7 @@ oa_preprint <- function(preprint_name, doi_prefix, time_seg = c("year", "quarter
       ),
       output = "list",
       timeout = 90,
-      #      verbose = TRUE
+#      verbose = TRUE
     )
     
     print(paste(preprint_name, "data retrieved for", time_seg, 
@@ -103,7 +103,7 @@ oa_preprint <- function(preprint_name, doi_prefix, time_seg = c("year", "quarter
 
 # Retrieve bioRxiv and medRxiv data ----
 # bioRxiv was established in late 2013
-# data pulled from OpenAlex on 2026-10-26
+# data last pulled from OpenAlex on 2026-10-26
 oa_preprint(preprint_name = "biorxiv_medrxiv", doi_prefix = "10.1101", time_seg = "year",
             start_date = "2013-01-01", end_date = "2018-01-01")
 
@@ -121,14 +121,14 @@ oa_preprint(preprint_name = "openrxiv", doi_prefix = "10.64898", time_seg = "qua
 
 # Retrieve ChemRxiv data ----
 # ChemRxiv was established in 2017
-# data pulled from OpenAlex on 2026-10-26
+# data last pulled from OpenAlex on 2026-10-26
 oa_preprint(preprint_name = "chemrxiv", doi_prefix = "10.26434", time_seg = "quarter",
             start_date = "2017-01-01", end_date = "2026-10-01")
 
 
 # Retrieve EarthArXiv data ----
 # EarthArXiv was established in 2017
-# data pulled from OpenAlex on 2026-10-26
+# data last pulled from OpenAlex on 2026-10-26
 oa_preprint(preprint_name = "eartharxiv", doi_prefix = "10.31223", time_seg = "year",
             start_date = "2017-01-01", end_date = "2026-01-01")
 
@@ -138,7 +138,7 @@ oa_preprint(preprint_name = "eartharxiv", doi_prefix = "10.31223", time_seg = "q
 
 # Retrieve EcoEvoRxiv data | numbers were ~3.7k 10/25----
 # EcoEvoRxiv was established in 2018
-# data pulled from OpenAlex on 2026-10-26
+# data last pulled from OpenAlex on 2026-10-26
 oa_preprint(preprint_name = "ecoevorxiv", doi_prefix = "10.32942", time_seg = "year",
             start_date = "2018-01-01", end_date = "2026-01-01")
 
@@ -150,7 +150,7 @@ oa_preprint(preprint_name = "ecoevorxiv", doi_prefix = "10.32942", time_seg = "q
 # Retrieve data for Research Square ----
 # Research Square was established in 2013, and acquired by Nature in 2022
 # prior to 2018, Research Square did not mint DOI
-# data pulled from OpenAlex on 2026-10-26
+# data last pulled from OpenAlex on 2026-10-28
 oa_preprint(preprint_name = "researchsquare", doi_prefix = "10.21203", time_seg = "quarter",
             start_date = "2013-01-01", end_date = "2020-01-01")
 
@@ -159,9 +159,24 @@ oa_preprint(preprint_name = "researchsquare", doi_prefix = "10.21203", time_seg 
 
 
 
+# Retrieve data for SSRN ----
+# SSRN was established in 1994, and was acquired by Elsevier in 2016 
+# data last pulled form OpenAlex on 2026-10-28
+oa_preprint(preprint_name = "ssrn", doi_prefix = "10.2139", time_seg = "year",
+            start_date = "1994-01-01", end_date = "2006-01-01")
+
+oa_preprint(preprint_name = "ssrn", doi_prefix = "10.2139", time_seg = "quarter",
+            start_date = "2006-01-01", end_date = "2020-01-01")
+
+# still need to run the following line
+oa_preprint(preprint_name = "ssrn", doi_prefix = "10.2139", time_seg = "month",
+            start_date = "2020-01-01", end_date = "2026-10-01")
+
+
+
 # Retrieve data for preprint.org ----
 # preprint.org is owned by MDPI. It was launched in 2016
-# data pulled from OpenAlex on 2026-10-28
+# data last pulled from OpenAlex on 2026-10-28
 oa_preprint(preprint_name = "preprintsorg", doi_prefix = "10.20944", time_seg = "year",
             start_date = "2016-01-01", end_date = "2024-01-01")
 
@@ -172,9 +187,10 @@ oa_preprint(preprint_name = "preprintsorg", doi_prefix = "10.20944", time_seg = 
 
 # Retrieve data for SciELO ----
 # SciELO includes more than preprints; SciELO Preprints was launched in Apr 2020
-# data pulled from OpenAlex on 2026-10-26
+# data last pulled from OpenAlex on 2026-10-26
 oa_preprint(preprint_name = "scielo", doi_prefix = "10.1590", time_seg = "quarter",
             start_date = "2020-01-01", end_date = "2026-10-01")
+
 
 
 # ChinaRxiv and AfricArXiv ----
