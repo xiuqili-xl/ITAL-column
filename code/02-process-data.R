@@ -42,26 +42,31 @@ rm(biorxiv_medrxiv_data, openrxiv_data)
 ## sanity check
 nrow(biorxiv_medrxiv_combined_data)                     # 235,605
 table(biorxiv_medrxiv_combined_data$journal_title)      # Include more than bioRxiv and medRxiv
-biorxiv_medrxiv_combined_data %>% count(article_type)   # 235579 preprints, 10 articles, and more
+biorxiv_medrxiv_combined_data %>% count(article_type)   # mostly tagged as preprints
 
 ## investigate CSH publications
 ## other CSH publications share the same DOI prefix
 biorxiv_medrxiv_remove_1 <- biorxiv_medrxiv_combined_data %>% 
   filter(str_detect(journal_title, "Cold Spring Harbor"), 
          !str_detect(journal_title, "Institutional Repository"), 
-         !str_detect(journal_title, "bioRxiv"))
+         !str_detect(journal_title, "bioRxiv")) %>%
+  arrange(journal_title)
 view(biorxiv_medrxiv_remove_1)
-## spot check reviewed these are other CSH publications
+## spot check revealed that these are other CSH publications - remove
 
 biorxiv_medrxiv_remove_2 <- biorxiv_medrxiv_combined_data %>% 
   filter(journal_title %in% c("Genes & Development", "Genome Research", 
-                              "Learning & Memory", "Molecular Case Studies"))
+                              "Learning & Memory", "Molecular Case Studies")) %>%
+  arrange(journal_title)
 view(biorxiv_medrxiv_remove_2)
-## spot check reviewed these are other CSH publications
+## spot check revealed that these are other CSH publications - remove
 
-## observation, doi for these articles starts with letters, let's investigate
-biorxiv_medrxiv_remove_3 <- biorxiv_medrxiv_cleaned_data %>% 
-  filter(str_detect(doi, "1101/[a-zA-Z]+"))
+## observation: doi for these CSH publications starts with letters, let's investigate
+biorxiv_medrxiv_remove_3 <- biorxiv_medrxiv_combined_data %>% 
+  filter(!article_id %in% c(biorxiv_medrxiv_remove_1$article_id, 
+                            biorxiv_medrxiv_remove_2$article_id)) %>%
+  filter(str_detect(doi, "1101/[a-zA-Z]+")) %>%
+  arrange(doi)
 view(biorxiv_medrxiv_remove_3)
 ## majority (60/89)  have PubMed listed as journal_title...
 ## spot test revealed that a lot of doi fail to resolve
@@ -73,6 +78,11 @@ biorxiv_medrxiv_cleaned_data <- biorxiv_medrxiv_combined_data %>%
                             biorxiv_medrxiv_remove_2$article_id,
                             biorxiv_medrxiv_remove_3$article_id)) 
 
+## export intermediate data file to `data_temp`. Note, this directory is not tracked by Git
+saveRDS(biorxiv_medrxiv_cleaned_data, 
+        file = here("data_temp", "biorxiv_medrxiv_openalex_cleaned.rds"))
+
+
 ## sanity check with row numbers
 nrow(biorxiv_medrxiv_cleaned_data) == nrow(biorxiv_medrxiv_combined_data) - 
   nrow(biorxiv_medrxiv_remove_1) -
@@ -81,9 +91,12 @@ nrow(biorxiv_medrxiv_cleaned_data) == nrow(biorxiv_medrxiv_combined_data) -
 
 nrow(biorxiv_medrxiv_cleaned_data)                      # 223003
 table(biorxiv_medrxiv_cleaned_data$journal_title)       # still include more than bioRxiv and medRxiv
+table(biorxiv_medrxiv_cleaned_data$article_type)        # nearly all tagged preprints
+biorxiv_medrxiv_cleaned_data %>% get_dupes(doi)         # 64 duplicates
+biorxiv_medrxiv_cleaned_data %>% get_dupes(article_id)  # all unique OpenAlex ID
 
 
-# summary statistics
+## summary statistics
 biorxiv_medrxiv_stats <- biorxiv_medrxiv_cleaned_data %>% 
   count(publication_year, publication_month)
 
@@ -109,24 +122,20 @@ write_csv(chemrxiv_stats, here("outputs_stats", "chemrxiv_openalex_stats.csv"))
 
 
 
-# !!! EarthArXiv ----
-# data pulled from OpenAlex on 2026-10-26
+# EarthArXiv ----
+# data pulled from OpenAlex on 2026-10-26 | numbers were ~7.9k 10/25
 # on the same day, EarthArXiv claims 7927 preprints listed, including those published in Oct 2026
 eartharxiv_data <- load_preprint_data(subdirectory = "eartharxiv")
 glimpse(eartharxiv_data)
 
 ## sanity check
-nrow(eartharxiv_data)                       # 7,907
-unique(eartharxiv_data$journal_title)       # include more than EarthArxiv and NA
-eartharxiv_data %>% count(article_type)     # 7905 preprint, 1 article, and 1 letter
+nrow(eartharxiv_data)                         # 4,969
+unique(eartharxiv_data$journal_title)         # include more than EarthArxiv and NA
+eartharxiv_data %>% count(article_type)       # 4967 preprint, 1 article, and 1 letter
+eartharxiv_data %>% get_dupes(doi)            # 92 duplicates
+eartharxiv_data %>% get_dupes(article_id)     # all unique OpenAlex ID
 
-# duplicates? --- NEED TO CLEAN UP 
-eartharxiv_data %>%
-  get_dupes(doi) %>% view()
-## manual inspection shows that some of this is likely due to multiple versions of the same preprint,
-## preprints being withdrawn. They all have unique article_id's though...
-
-# summary statistics
+## summary statistics
 eartharxiv_stats <- eartharxiv_data %>% 
   count(publication_year, publication_month)
 
@@ -184,3 +193,8 @@ scielo_stats <- scielo_cleaned_data %>%
   count(publication_year, publication_month)
 
 write_csv(scielo_stats, here("outputs_stats", "scielo_openalex_stats.csv"))
+
+
+
+# 
+

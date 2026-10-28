@@ -113,7 +113,6 @@ oa_preprint(preprint_name = "biorxiv_medrxiv", doi_prefix = "10.1101", time_seg 
 oa_preprint(preprint_name = "biorxiv_medrxiv", doi_prefix = "10.1101", time_seg = "month",
             start_date = "2023-01-01", end_date = "2026-10-01")
 
-
 # since bioRiv & medRxiv transitioned to openArxiv in 2025, the doi prefix changed
 oa_preprint(preprint_name = "openrxiv", doi_prefix = "10.64898", time_seg = "quarter",
             start_date = "2025-10-01", end_date = "2026-10-01")
@@ -127,7 +126,7 @@ oa_preprint(preprint_name = "chemrxiv", doi_prefix = "10.26434", time_seg = "qua
             start_date = "2017-01-01", end_date = "2026-10-01")
 
 
-# !!! Retrieve EarthArXiv data ----
+# Retrieve EarthArXiv data ----
 # EarthArXiv was established in 2017
 # data pulled from OpenAlex on 2026-10-26
 oa_preprint(preprint_name = "eartharxiv", doi_prefix = "10.31223", time_seg = "year",
@@ -137,7 +136,7 @@ oa_preprint(preprint_name = "eartharxiv", doi_prefix = "10.31223", time_seg = "q
             start_date = "2026-01-01", end_date = "2026-10-01")
 
 
-# !!! Retrieve EcoEvoRxiv data ----
+# Retrieve EcoEvoRxiv data | numbers were ~3.7k 10/25----
 # EcoEvoRxiv was established in 2018
 # data pulled from OpenAlex on 2026-10-26
 oa_preprint(preprint_name = "ecoevorxiv", doi_prefix = "10.32942", time_seg = "year",
@@ -160,8 +159,28 @@ oa_preprint(preprint_name = "researchsquare", doi_prefix = "10.21203", time_seg 
 
 
 
+# Retrieve data for preprint.org ----
+# preprint.org is owned by MDPI. It was launched in 2016
+# data pulled from OpenAlex on 2026-10-28
+oa_preprint(preprint_name = "preprintsorg", doi_prefix = "10.20944", time_seg = "year",
+            start_date = "2016-01-01", end_date = "2024-01-01")
+
+oa_preprint(preprint_name = "preprintsorg", doi_prefix = "10.20944", time_seg = "quarter",
+            start_date = "2024-01-01", end_date = "2026-10-01")
+
+
+
 # Retrieve data for SciELO ----
 # SciELO includes more than preprints; SciELO Preprints was launched in Apr 2020
 # data pulled from OpenAlex on 2026-10-26
 oa_preprint(preprint_name = "scielo", doi_prefix = "10.1590", time_seg = "quarter",
             start_date = "2020-01-01", end_date = "2026-10-01")
+
+
+# ChinaRxiv and AfricArXiv ----
+# ChinaRxiv does not appear to mint DOI, instead they provide a ChinaRxiv unique ID (ChinaXiv:YYYYMM.NNNNN)
+# Future note, directly investigate ChinaRxiv API https://chinarxiv.org/api/docs
+
+# Certain preprints in AfricArxiv has the doi prefix 10.60763, 
+# but it doesn't not appear to be applicable across the board...
+# OpenAlex only contains ~150 items with this prefix, which is a lot lower than the 8k count reported by the platform

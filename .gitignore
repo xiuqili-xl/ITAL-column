@@ -2,6 +2,9 @@
 .DS_Store
 **/.DS_Store
 
+# Intermediate data files
+data_temp/
+
 # History files
 .Rhistory
 .Rapp.history
