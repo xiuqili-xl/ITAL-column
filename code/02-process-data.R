@@ -6,7 +6,6 @@
 # Load libraries ----
 library(tidyverse)
 library(here)
-
 library(janitor)       # get_dupes()
 
 
@@ -25,24 +24,31 @@ load_preprint_data <- function(directory = input_dir, subdirectory){
 }
 
 
-# arXiv ----
+# Process arXiv data ----
 
 
 
 
-# bioRxiv and medRxiv -----
-## data pulled from OpenAlex on 2026-10-26
+# Process bioRxiv and medRxiv data -----
+## data last pulled from OpenAlex on 2026-10-26
 ## for comparison with data from bioRxiv/medRxiv API, see XXX
 biorxiv_medrxiv_data <- load_preprint_data(subdirectory = "biorxiv_medrxiv")
 openrxiv_data <- load_preprint_data(subdirectory = "openrxiv")
 
+## compare with OpenAlex web interface
+biorxiv_medrxiv_data %>% count(publication_year)      # doi prefix: 10.1101
+openrxiv_data %>% count(publication_year)             # doi prefix: 10.64898
+
+## combine dataset
 biorxiv_medrxiv_combined_data <- bind_rows(biorxiv_medrxiv_data, openrxiv_data)
 rm(biorxiv_medrxiv_data, openrxiv_data)
 
 ## sanity check
-nrow(biorxiv_medrxiv_combined_data)                     # 235,605
-table(biorxiv_medrxiv_combined_data$journal_title)      # Include more than bioRxiv and medRxiv
-biorxiv_medrxiv_combined_data %>% count(article_type)   # mostly tagged as preprints
+nrow(biorxiv_medrxiv_combined_data)                        # 235,605
+sort(table(biorxiv_medrxiv_combined_data$journal_title), decreasing = TRUE)[1:5]
+# include more than bioRxiv and medRxiv -- some known publications by CSHL, which we'll remove
+sort(table(biorxiv_medrxiv_combined_data$article_type), decreasing = TRUE)
+# mostly tagged as preprints
 
 ## investigate CSH publications
 ## other CSH publications share the same DOI prefix
@@ -52,14 +58,14 @@ biorxiv_medrxiv_remove_1 <- biorxiv_medrxiv_combined_data %>%
          !str_detect(journal_title, "bioRxiv")) %>%
   arrange(journal_title)
 view(biorxiv_medrxiv_remove_1)
-## spot check revealed that these are other CSH publications - remove
+## spot check revealed that these are other CSH publications - to remove
 
 biorxiv_medrxiv_remove_2 <- biorxiv_medrxiv_combined_data %>% 
   filter(journal_title %in% c("Genes & Development", "Genome Research", 
                               "Learning & Memory", "Molecular Case Studies")) %>%
   arrange(journal_title)
 view(biorxiv_medrxiv_remove_2)
-## spot check revealed that these are other CSH publications - remove
+## spot check revealed that these are other CSH publications - to remove
 
 ## observation: doi for these CSH publications starts with letters, let's investigate
 biorxiv_medrxiv_remove_3 <- biorxiv_medrxiv_combined_data %>% 
@@ -69,8 +75,7 @@ biorxiv_medrxiv_remove_3 <- biorxiv_medrxiv_combined_data %>%
   arrange(doi)
 view(biorxiv_medrxiv_remove_3)
 ## majority (60/89)  have PubMed listed as journal_title...
-## spot test revealed that a lot of doi fail to resolve
-
+## spot test revealed that a lot of doi fail to resolve...
 
 ## remove CSH publications
 biorxiv_medrxiv_cleaned_data <- biorxiv_medrxiv_combined_data %>%
@@ -82,19 +87,17 @@ biorxiv_medrxiv_cleaned_data <- biorxiv_medrxiv_combined_data %>%
 saveRDS(biorxiv_medrxiv_cleaned_data, 
         file = here("data_temp", "biorxiv_medrxiv_openalex_cleaned.rds"))
 
-
 ## sanity check with row numbers
 nrow(biorxiv_medrxiv_cleaned_data) == nrow(biorxiv_medrxiv_combined_data) - 
-  nrow(biorxiv_medrxiv_remove_1) -
-  nrow(biorxiv_medrxiv_remove_2) -
-  nrow(biorxiv_medrxiv_remove_3)
+  nrow(biorxiv_medrxiv_remove_1) - nrow(biorxiv_medrxiv_remove_2) - nrow(biorxiv_medrxiv_remove_3)
 
-nrow(biorxiv_medrxiv_cleaned_data)                      # 223003
-table(biorxiv_medrxiv_cleaned_data$journal_title)       # still include more than bioRxiv and medRxiv
-table(biorxiv_medrxiv_cleaned_data$article_type)        # nearly all tagged preprints
+nrow(biorxiv_medrxiv_cleaned_data)                      # 223,003
+sort(table(biorxiv_medrxiv_cleaned_data$journal_title), decreasing = TRUE)
+# still include more than bioRxiv and medRxiv
+sort(table(biorxiv_medrxiv_cleaned_data$article_type), decreasing = TRUE)    
+# nearly all tagged preprints
 biorxiv_medrxiv_cleaned_data %>% get_dupes(doi)         # 64 duplicates
 biorxiv_medrxiv_cleaned_data %>% get_dupes(article_id)  # all unique OpenAlex ID
-
 
 ## summary statistics
 biorxiv_medrxiv_stats <- biorxiv_medrxiv_cleaned_data %>% 
@@ -104,15 +107,16 @@ write_csv(biorxiv_medrxiv_stats, here("outputs_stats", "biorxiv_medrxiv_openalex
 
 
 
-# ChemRxiv ----
-## data pulled from OpenAlex on 2026-10-26
+# Process ChemRxiv data ----
+## data last pulled from OpenAlex on 2026-10-26
 ## on the same day, ChemRxiv claims 45,639 preprints listed
 chemrxiv_data <- load_preprint_data(subdirectory = "chemrxiv")
+chemrxiv_data %>% count(publication_year)           # doi prefix: 10.26434
 
 ## sanity check
-nrow(chemrxiv_data)                         # 28,387
-unique(chemrxiv_data$journal_title)         # Include more than ChemRxiv
-chemrxiv_data %>% count(article_type)       # 28378 preprints, 1 article, 8 erratum, 1 other
+nrow(chemrxiv_data)                                 # 28,387
+count(chemrxiv_data, journal_title, sort = TRUE)    # mostly ChemRxiv (28,379)
+count(chemrxiv_data, article_type, sort = TRUE)     # mostly tagged as preprints (28,377)
 
 # summary statistics
 chemrxiv_stats <- chemrxiv_data %>% 
@@ -123,17 +127,17 @@ write_csv(chemrxiv_stats, here("outputs_stats", "chemrxiv_openalex_stats.csv"))
 
 
 # EarthArXiv ----
-# data pulled from OpenAlex on 2026-10-26 | numbers were ~7.9k 10/25
+# data last pulled from OpenAlex on 2026-10-26 | numbers were ~7.9k 10/25
 # on the same day, EarthArXiv claims 7927 preprints listed, including those published in Oct 2026
 eartharxiv_data <- load_preprint_data(subdirectory = "eartharxiv")
-glimpse(eartharxiv_data)
+eartharxiv_data %>% count(publication_year)          # doi prefix: 10.31223
 
 ## sanity check
-nrow(eartharxiv_data)                         # 4,969
-unique(eartharxiv_data$journal_title)         # include more than EarthArxiv and NA
-eartharxiv_data %>% count(article_type)       # 4967 preprint, 1 article, and 1 letter
-eartharxiv_data %>% get_dupes(doi)            # 92 duplicates
-eartharxiv_data %>% get_dupes(article_id)     # all unique OpenAlex ID
+nrow(eartharxiv_data)                                # 4,969
+count(eartharxiv_data, journal_title, sort = TRUE)   # the most are actually NA...
+count(eartharxiv_data, article_type, sort = TRUE)    # nearly all are tagged preprint (4,967)
+eartharxiv_data %>% get_dupes(doi)                   # 92 duplicates
+eartharxiv_data %>% get_dupes(article_id)            # all unique OpenAlex ID
 
 ## summary statistics
 eartharxiv_stats <- eartharxiv_data %>% 
@@ -143,15 +147,16 @@ write_csv(eartharxiv_stats, here("outputs_stats", "eartharxiv_openalex_stats.csv
 
 
 
-# EcoEvoRxiv -----
-## data pulled from OpenAlex on 2026-10-26
-## on the same day, EarthArXiv claims XXX preprints listed
+# Processed EcoEvoRxiv data -----
+## data last pulled from OpenAlex on 2026-10-26
+## on the same day, EcoEvoRxiv claims 3840 preprints listed
 ecoevorxiv_data <- load_preprint_data(subdirectory = "ecoevorxiv")
+ecoevorxiv_data %>% count(publication_year)     # doi prefix 10.32942
 
 ## sanity check
-nrow(ecoevorxiv_data)                       # 3,730
-unique(ecoevorxiv_data$journal_title)       # Include just EcoEvoRxiv and NA
-ecoevorxiv_data %>% count(article_type)     # 3728 preprints, 2 erratum
+nrow(ecoevorxiv_data)                           # 2,825
+count(ecoevorxiv_data, journal_title)           # mostly NA...
+count(ecoevorxiv_data, article_type)            # mostly preprints (2,823)
 
 # summary statistics
 ecoevorxiv_stats <- ecoevorxiv_data %>% 
@@ -161,9 +166,9 @@ write_csv(ecoevorxiv_stats, here("outputs_stats", "ecoevorxiv_openalex_stats.csv
 
 
 
-# Research Square -----
-## data pulled from OpenAlex on 2026-01-01
-## on the same day, EarthArXiv reports 485,330 preprints, including those from Oct 2026
+# Process data for Research Square -----
+## data last pulled from OpenAlex on 2026-10-28
+## on the same day, Research Square reports 478,378 preprints posted before Oct 2026
 reseachsquare_data <- load_preprint_data(subdirectory = "researchsquare")
 
 ## sanity check
@@ -180,9 +185,31 @@ write_csv(reseachsquare_stats, here("outputs_stats", "researchsquare_openalex_st
 
 
 # SSRN ----
+## data last pulled from OpenAlex on 2026-10-28
+## on the same day, SSRN reports X preprints, including those from Oct 2026
+ssrn_data <- load_preprint_data(subdirectory = "ssrn")
 
+## sanity check
+nrow(ssrn_data)                                                # 1,190,151
+unique(ssrn_data$journal_title)                                # includes more than Research Square
+sort(table(ssrn_data$journal_title), decreasing = TRUE)[1:5]   # mostly attributed to SSRB (1,183,009) 
+sort(table(ssrn_data$article_type), decreasing = TRUE)         # mostly tagged as preprint (1,183,265)
 
+## some additional investigation...
+## how many items have an assigned publication date of Jan 1
+ssrn_data %>%
+  mutate(published_jan1 = str_detect(publication_date, "01-01")) %>%
+  count(published_jan1) %>%
+  mutate(percent = n/sum(n) * 100)
+## nearly all (99.78%) of items have a publication date of Jan 1...
 
+## summary statistics, which we probably won't graph
+ssrn_data %>% count(publication_year)      # for comparison with OpenAlex web interface
+
+ssrn_stats <- ssrn_data %>% 
+  count(publication_year, publication_month)
+
+write_csv(ssrn_stats, here("outputs_stats", "ssrn_openalex_stats.csv"))
 
 
 
