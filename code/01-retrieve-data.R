@@ -176,7 +176,7 @@ oa_preprint(preprint_name = "ssrn", doi_prefix = "10.2139", time_seg = "month",
 
 
 
-# Retrieve data for preprint.org ----
+# Retrieve data for preprints.org ----
 # preprint.org is owned by MDPI. It was launched in 2016
 # data last pulled from OpenAlex on 2026-10-28
 oa_preprint(preprint_name = "preprintsorg", doi_prefix = "10.20944", time_seg = "year",
@@ -195,7 +195,7 @@ oa_preprint(preprint_name = "scielo", doi_prefix = "10.1590", time_seg = "quarte
 
 
 
-# ChinaRxiv and AfricArXiv ----
+# Notes about ChinaRxiv and AfricArXiv ----
 # ChinaRxiv does not appear to mint DOI, instead they provide a ChinaRxiv unique ID (ChinaXiv:YYYYMM.NNNNN)
 # Future note, directly investigate ChinaRxiv API https://chinarxiv.org/api/docs
 

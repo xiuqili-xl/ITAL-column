@@ -166,15 +166,16 @@ write_csv(ecoevorxiv_stats, here("outputs_stats", "ecoevorxiv_openalex_stats.csv
 
 
 
-# Process data for Research Square -----
+# Process Research Square data -----
 ## data last pulled from OpenAlex on 2026-10-28
 ## on the same day, Research Square reports 478,378 preprints posted before Oct 2026
 reseachsquare_data <- load_preprint_data(subdirectory = "researchsquare")
+reseachsquare_data %>% count(publication_year)          # doi prefix 10.21203
 
 ## sanity check
-nrow(reseachsquare_data)                      # 299,916
-unique(reseachsquare_data$journal_title)      # Include more than Research Square
-reseachsquare_data %>% count(article_type)    # 299915 preprints, 1 article
+nrow(reseachsquare_data)                                # 299,509
+count(reseachsquare_data, journal_title, sort = TRUE)   # mostly Research Square (279,277) and NA (20,195)
+count(reseachsquare_data, article_type, sort = TRUE)    # 299508 preprints, 1 article
 
 ## summary statistics
 reseachsquare_stats <- reseachsquare_data %>% 
@@ -184,16 +185,17 @@ write_csv(reseachsquare_stats, here("outputs_stats", "researchsquare_openalex_st
 
 
 
-# SSRN ----
+# Process SSRN data ----
 ## data last pulled from OpenAlex on 2026-10-28
 ## on the same day, SSRN reports X preprints, including those from Oct 2026
 ssrn_data <- load_preprint_data(subdirectory = "ssrn")
+ssrn_data %>% count(publication_year)                          # doi prefix: 10.2139
 
 ## sanity check
 nrow(ssrn_data)                                                # 1,190,151
 unique(ssrn_data$journal_title)                                # includes more than Research Square
-sort(table(ssrn_data$journal_title), decreasing = TRUE)[1:5]   # mostly attributed to SSRB (1,183,009) 
-sort(table(ssrn_data$article_type), decreasing = TRUE)         # mostly tagged as preprint (1,183,265)
+sort(table(ssrn_data$journal_title), decreasing = TRUE)[1:5]   # mostly attributed to SSRN (1,183,009) 
+sort(table(ssrn_data$article_type), decreasing = TRUE)         # mostly tagged as preprints (1,183,265)
 
 ## some additional investigation...
 ## how many items have an assigned publication date of Jan 1
@@ -204,8 +206,6 @@ ssrn_data %>%
 ## nearly all (99.78%) of items have a publication date of Jan 1...
 
 ## summary statistics, which we probably won't graph
-ssrn_data %>% count(publication_year)      # for comparison with OpenAlex web interface
-
 ssrn_stats <- ssrn_data %>% 
   count(publication_year, publication_month)
 
@@ -213,11 +213,31 @@ write_csv(ssrn_stats, here("outputs_stats", "ssrn_openalex_stats.csv"))
 
 
 
-# SciELO -----
-# SciELO includes more than preprints, thus we need to do an additional level of filtering
+# Retrieve preprints.org data ----
+# data last pulled from OpenAlex on 2026-10-28
+# on the same data, preprints.org reports 143K+ total preprints
+preprintsorg_data <- load_preprint_data(subdirectory = "preprintsorg")
+preprintsorg_data %>% count(publication_year)        # doi prefix: 10.20944
+
+## sanity check
+nrow(preprintsorg_data)                                 # 54,663
+count(preprintsorg_data, journal_title, sort = TRUE)    # nearly all attributed to Preprints.org (54,640)
+count(preprintsorg_data, article_type, sort = TRUE)     # nearly all tagged as preprints (54,662)
+
+## summary statistics
+preprintsorg_stats <- preprintsorg_data %>%
+  count(publication_year, publication_month)
+
+write_csv(preprintsorg_stats, here("outputs_stats", "preprintsorg_openalex_stats.csv"))
+
+
+
+# Process SciELO data -----
 # data pulled from OpenAlex on 2026-10-26 
 scielo_data <- load_preprint_data(subdirectory = "scielo")
+scielo_data %>% count(publication_year)          # doi prefix: 10.1590
 
+## SciELO includes more than preprints, thus we need to do an additional level of filtering
 ## in our analysis, we'll include articles either marked as preprint or has "scieloprepints" in doi
 scielo_cleaned_data <- scielo_data %>%
   filter(article_type == "preprint" | str_detect(doi, "scielopreprints"))
