@@ -213,7 +213,7 @@ write_csv(ssrn_stats, here("outputs_stats", "ssrn_openalex_stats.csv"))
 
 
 
-# Retrieve preprints.org data ----
+# Process preprints.org data ----
 # data last pulled from OpenAlex on 2026-10-28
 # on the same data, preprints.org reports 143K+ total preprints
 preprintsorg_data <- load_preprint_data(subdirectory = "preprintsorg")
