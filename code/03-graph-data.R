@@ -8,7 +8,7 @@ library(here)
 
 
 # Import and wrangle data ----
-arxiv_stats <- write_csv(arxiv_stats, here("outputs_stats", "arxiv_openalex_stats.csv")) %>%
+arxiv_stats <- read_csv(here("outputs_stats", "arxiv_openalex_stats.csv")) %>%
   mutate(preprint_server = "arXiv")
 
 biorxiv_medrxiv_stats <- read_csv(here("outputs_stats", "biorxiv_medrxiv_openalex_stats.csv")) %>%
@@ -35,7 +35,7 @@ scielo_stats <- read_csv(here("outputs_stats", "scielo_openalex_stats.csv")) %>%
 
 
 # Bind data ----
-preprint_data <- bind_rows(biorxiv_medrxiv_stats, chemrxiv_stats, 
+preprint_data <- bind_rows(arxiv_stats, biorxiv_medrxiv_stats, chemrxiv_stats, 
                            eartharxiv_ecoevorxiv_stats, reseachsquare_stats, 
                            preprintsorg_stats, scielo_stats) %>%
   mutate(publication_month_label = paste(publication_year, sprintf("%02d", publication_month), sep = "-"), .after = publication_month) %>%
@@ -50,7 +50,7 @@ ggplot(data = preprint_data %>% filter(publication_year >= 2010),
   geom_col() +
   facet_grid(~ publication_year, scales="free", space="free_x", switch="both") +
   scale_x_discrete(name = NULL) +
-  scale_y_continuous(expand = 0.01, limits = c(0, 22000)) +
+  scale_y_continuous(expand = 0.01, limits = c(0, 41000)) +
   theme_bw() +
   theme(panel.grid.major.y = element_line(color = "grey90", linewidth = 0.15),
         panel.grid.minor.y = element_line(color = "grey90", linewidth = 0.15),

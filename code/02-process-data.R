@@ -25,7 +25,22 @@ load_preprint_data <- function(directory = input_dir, subdirectory){
 
 
 # Process arXiv data ----
+## data last pulled from OpenAlex on 2026-10-29
+arxiv_data <- load_preprint_data(subdirectory = "arxiv")
 
+## compare with OpenAlex web interface
+arxiv_data %>% count(publication_year)           # doi prefix: 10.48550
+
+## sanity check
+nrow(arxiv_data)                                 # 1,040,018
+count(arxiv_data, journal_title, sort = TRUE)    # mostly are attributed to arXiv (996,285)
+count(arxiv_data, article_type, sort = TRUE)     # mostly are tagged as preprints (1,015,662)
+
+## summary statistics
+arxiv_stats <- arxiv_data %>% 
+  count(publication_year, publication_month)
+
+write_csv(arxiv_stats, here("outputs_stats", "arxiv_openalex_stats.csv"))
 
 
 
@@ -126,7 +141,7 @@ write_csv(chemrxiv_stats, here("outputs_stats", "chemrxiv_openalex_stats.csv"))
 
 
 
-# EarthArXiv ----
+# Process EarthArXiv data ----
 # data last pulled from OpenAlex on 2026-10-26 | numbers were ~7.9k 10/25
 # on the same day, EarthArXiv claims 7927 preprints listed, including those published in Oct 2026
 eartharxiv_data <- load_preprint_data(subdirectory = "eartharxiv")

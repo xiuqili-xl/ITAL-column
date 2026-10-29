@@ -97,7 +97,23 @@ oa_preprint <- function(preprint_name, doi_prefix, time_seg = c("year", "quarter
 
 
 # Retrieve arXiv data ----
+# arXiv was established in 1991
+# data last pulled from OpenAlex on 2026-10-29
+oa_preprint(preprint_name = "arxiv", doi_prefix = "10.48550", time_seg = "year",
+            start_date = "1991-01-01", end_date = "2002-01-01")
 
+oa_preprint(preprint_name = "arxiv", doi_prefix = "10.48550", time_seg = "quarter",
+            start_date = "2002-01-01", end_date = "2017-01-01")
+
+oa_preprint(preprint_name = "arxiv", doi_prefix = "10.48550", time_seg = "month",
+            start_date = "2017-01-01", end_date = "2025-01-01")
+
+oa_preprint(preprint_name = "arxiv", doi_prefix = "10.48550", time_seg = "week",
+            start_date = "2025-01-01", end_date = "2026-10-01")
+
+# run and delete after OpenAlex usage resets
+oa_preprint(preprint_name = "arxiv", doi_prefix = "10.48550", time_seg = "week",
+            start_date = "2026-04-01", end_date = "2026-10-01")
 
 
 
