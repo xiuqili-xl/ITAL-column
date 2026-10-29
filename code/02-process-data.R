@@ -179,6 +179,13 @@ write_csv(reseachsquare_stats, here("outputs_stats", "researchsquare_openalex_st
 
 
 
+# SSRN ----
+
+
+
+
+
+
 # SciELO -----
 # SciELO includes more than preprints, thus we need to do an additional level of filtering
 # data pulled from OpenAlex on 2026-10-26 
@@ -196,5 +203,5 @@ write_csv(scielo_stats, here("outputs_stats", "scielo_openalex_stats.csv"))
 
 
 
-# 
+
 

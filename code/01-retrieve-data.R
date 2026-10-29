@@ -168,9 +168,11 @@ oa_preprint(preprint_name = "ssrn", doi_prefix = "10.2139", time_seg = "year",
 oa_preprint(preprint_name = "ssrn", doi_prefix = "10.2139", time_seg = "quarter",
             start_date = "2006-01-01", end_date = "2020-01-01")
 
-# still need to run the following line
 oa_preprint(preprint_name = "ssrn", doi_prefix = "10.2139", time_seg = "month",
             start_date = "2020-01-01", end_date = "2026-10-01")
+
+# observation: most of SSRN preprints are posted at the beginning of the year 
+# (first quarter or first month)
 
 
 
