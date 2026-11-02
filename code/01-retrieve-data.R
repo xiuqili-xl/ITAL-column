@@ -111,10 +111,6 @@ oa_preprint(preprint_name = "arxiv", doi_prefix = "10.48550", time_seg = "month"
 oa_preprint(preprint_name = "arxiv", doi_prefix = "10.48550", time_seg = "week",
             start_date = "2025-01-01", end_date = "2026-10-01")
 
-# run and delete after OpenAlex usage resets
-oa_preprint(preprint_name = "arxiv", doi_prefix = "10.48550", time_seg = "week",
-            start_date = "2026-04-01", end_date = "2026-10-01")
-
 
 
 # Retrieve bioRxiv and medRxiv data ----
