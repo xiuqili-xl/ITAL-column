@@ -137,11 +137,39 @@ datacite_arxiv(start_date = "2026-04-01", end_date = "2026-07-01")
 # all fill path within `data_DataCite/arxiv`
 file_paths <- list.files(path = here("data_DataCite", "arxiv"), pattern = "\\.rds$", full.names = TRUE)
 
-# examine records from 2022 Jan, Feb, Mar -- update arxiv_stats
+## examine records from 2022 Jan, Feb, Mar -- and update arxiv_stats
+arxiv_2022Q1 <- bind_rows(lapply(file_paths[1:3], readRDS)) %>%
+  select(doi, registered, dates) 
+
+arxiv_2022Q1 %>%
+  mutate(registered = str_sub(registered, start = 1, end = 7)) %>%
+  count(registered)                                  # matches preprint counts in dc_stats_arxiv.csv
+
+arxiv_2022Q1_cleaned <- arxiv_2022Q1 %>%
+  mutate(registered = str_sub(registered, start = 1, end = 10)) %>%
+  unnest(dates) %>%
+  filter(dateType == "Available", dateInformation == "v1") %>% 
+  distinct(doi, registered, date)
+nrow(arxiv_2022Q1_cleaned) == nrow(arxiv_2022Q1)    # TRUE, suggesting 1 and only 1 Available date   
+
+arxiv_datacite_stats_earlier <- arxiv_2022Q1_cleaned %>% 
+  count(date, name = "preprint_count") %>%
+  mutate(period_start = ymd(paste0(date, "-01")),
+         period_end = lead(period_start) - 1,
+         total_count = NA) %>%
+  select(period_start, period_end, total_count, preprint_count)
+sum(arxiv_datacite_stats_rev$preprint_count)        # 873758
+
+arxiv_datacite_stats_revised <- arxiv_datacite_stats %>%
+  filter(period_start >= ymd("2022-04-01")) %>%
+  bind_rows(arxiv_datacite_stats_earlier) %>%
+  arrange(period_start)
+
+write_csv(arxiv_datacite_stats_revised, here("data_DataCite", "dc_stats_arxiv_revised.csv"))
 
 
-# examine records from 2022 Apr, May, Jun
-arxiv_2022Q2 <- bind_rows(lapply(file_paths[1:3], readRDS)) %>%
+## examine records from 2022 Apr, May, Jun
+arxiv_2022Q2 <- bind_rows(lapply(file_paths[4:6], readRDS)) %>%
   select(doi, registered, dates) 
 
 arxiv_2022Q2_cleaned <- arxiv_2022Q2 %>%
@@ -155,7 +183,7 @@ arxiv_2022Q2_cleaned %>%
   filter(str_sub(registered, start = 1, end = 7) != date) %>%
   view()
 # these are all has registration date at the beginning of the month
-# likely just due to the subtle delay with assigning DOI
+# likely due to the subtle delay with assigning DOI (e.g., blog mentions 24 hr)
 
 
 # examine records from 2026 Apr, May, Jun
@@ -173,9 +201,7 @@ arxiv_2026Q2_cleaned %>%
   filter(str_sub(registered, start = 1, end = 7) != date) %>%
   view()
 # these are all has registration date at the beginning of the month
-# likely just due to the subtle delay with assigning DOI
-
-
+# likely due to the subtle delay with assigning DOI (e.g., blog mentions 24 hr)
 
 
 

@@ -19,22 +19,22 @@ medrxiv_api_count <- read_csv(here("data_saved", "medrxiv_api_count.csv"))
 
 
 ## Wrangle data ----
-data_source_levels <- c("Server API", "Crossref", "OpenAlex")
-data_source_colors <- c("#F7B6D2", "firebrick", "salmon")
+data_source_levels <- c("Platform API", "Crossref", "OpenAlex (doi prefix)")
+data_source_colors <- c("lightskyblue1", "royalblue4", "steelblue1")
 names(data_source_colors) <- data_source_levels
 
 platform_stats <- biorxiv_api_count %>%
   left_join(medrxiv_api_count, by = "month_label") %>%
   mutate(platform_count = coalesce(biorxiv_count, 0) + coalesce(medrxiv_count, 0)) %>%
   mutate(year_label = str_sub(month_label, start = 1, end = 4), .before = month_label) %>%
-  mutate(data_source = "Server API",
+  mutate(data_source = "Platform API",
          data_source = factor(data_source, levels = data_source_levels))
 
 openalex_stats <- biorxiv_medrxiv_oa_df %>%
   mutate(month_label = paste(publication_year, sprintf("%02d", publication_month), sep = "-")) %>%
   count(month_label, name = "oa_count") %>%
   mutate(year_label = str_sub(month_label, start = 1, end = 4), .before = month_label) %>%
-  mutate(data_source = "OpenAlex",
+  mutate(data_source = "OpenAlex (doi prefix)",
          data_source = factor(data_source, levels = data_source_levels))
 
 crossref_stats <- cr_openarxiv_count %>%
@@ -73,9 +73,62 @@ ggplot() +
         panel.border = element_rect(colour = "grey70", linewidth = 0.25)) +
   labs(x = "", y = "New preprints",
        title = "bioRxiv and medRxiv data source comparison",
-       subtitle = "Crossref vs bioRxiv/medRxiv APIs")
-
+       subtitle = "bioRxiv/medRxiv APIs vs Crossref vs OpenAlex")
 
 ggsave(filename = "bioRxiv_medRxiv_data_source_comparison.png", path = here("outputs_graphs"),
-       height = 4, width = 8.5, dpi = 300, units = "in")
+       height = 4, width = 10, dpi = 300, units = "in")
+
+
+
+# arxiv ----
+## Import and wrangle data ----
+arxiv_data_source_levels <- c("Platform API", "DataCite (total)", "DataCite (preprint)")
+arxiv_data_source_colors <- c("#F7B6D2", "firebrick", "salmon")
+names(arxiv_data_source_colors) <- arxiv_data_source_levels
+
+arxiv_monthly_sub <- read_csv("https://arxiv.org/stats/get_monthly_submissions") %>%
+  mutate(year_label = str_sub(month, start = 1, end = 4), .before = month) %>%
+  mutate(data_source = "Platform API",
+         data_source = factor(data_source, levels = arxiv_data_source_levels))
+## for more info, see https://arxiv.org/stats/monthly_submissions
+
+arxiv_datacite_stats <- read_csv(here("data_DataCite", "dc_stats_arxiv.csv")) %>%
+  pivot_longer(cols = -starts_with("period_"), names_to = "data_source", values_to = "count") %>%
+  mutate(data_source = if_else(data_source == "total_count", "DataCite (total)", "DataCite (preprint)"),
+         data_source = factor(data_source, levels = arxiv_data_source_levels)) %>% 
+  mutate(month_label = str_sub(period_start, start = 1, end = 7), .before = period_start) %>%
+  mutate(year_label = str_sub(period_start, start = 1, end = 4), .before = month_label)
+
+
+## Graph data ----
+ggplot() +
+  geom_col(data = arxiv_monthly_sub %>% filter(!month %in% c("2026-10", "2026-11")),
+           mapping = aes(x = month, y = submissions, fill = data_source),
+           alpha = 0.75) +
+  geom_line(data = arxiv_datacite_stats,
+            mapping = aes(x = month_label, y = count, group = data_source, color = data_source)) +
+  geom_point(data = arxiv_datacite_stats,
+             mapping = aes(x = month_label, y = count, color = data_source), size = 1) +
+  scale_y_continuous(limits = c(0, 42000), expand = c(0.01, 0)) +
+  scale_color_manual(values = arxiv_data_source_colors, drop = FALSE, name = "Data Source") +
+  scale_fill_manual(values = arxiv_data_source_colors, drop = FALSE, name = "Data Source") +
+  facet_grid(~ year_label, scales="free", space="free_x", switch="both") +
+  theme_bw() +
+  theme(panel.grid.major.y = element_line(color = "grey90", linewidth = 0.15),
+        panel.grid.minor.y = element_line(color = "grey90", linewidth = 0.15),
+        panel.spacing.x = unit(0, "cm"),                   # plot facet panels together
+        panel.grid.major.x = element_blank(),
+#        plot.caption = element_text(face = "italic", color = "grey35"),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        strip.background = element_blank(),
+        panel.border = element_rect(colour = "grey70", linewidth = 0.25)) +
+  labs(x = "", y = "New preprints",
+       title = "arXiv data source comparison",
+       subtitle = "arXiv APIs vs DataCite")
+
+ggsave(filename = "arxiv_data_source_comparison.png", path = here("outputs_graphs"),
+       height = 4, width = 16, dpi = 300, units = "in")
+
+
 
