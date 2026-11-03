@@ -20,6 +20,14 @@ usethis::edit_r_environ()
 output_dir <- "data_Crossref"
 
 crossref_count <- function(preprint_name, doi_prefix, start_date, end_date){
+  # check if output directory has been assigned
+  if (dir.exists(output_dir)) {
+    message("Directory '", output_dir, "' exist. Moving forward.")
+  } else {
+    message("Check directory! Ending function")
+    return(NULL)     # exit the function early
+  }
+  
   # set up monthly sequence within the period
   period <- seq(ymd(start_date), ymd(end_date), by = "month")
   
@@ -32,7 +40,7 @@ crossref_count <- function(preprint_name, doi_prefix, start_date, end_date){
                                total_count = numeric(),
                                preprint_count = numeric())
   
-  # set up for loop to extract data from crossref on a monthly basis
+  # set up for loop to extract data from CrossRef on a monthly basis
   for(i in 1:length(start_dates)){
     # pause for 1 second before each API request
     Sys.sleep(1)                       
@@ -40,7 +48,7 @@ crossref_count <- function(preprint_name, doi_prefix, start_date, end_date){
     preprint_count_new <- data.frame(
       period_start = start_dates[i],
       period_end = end_dates[i],
-      # limit = 0 means return not returning individual record
+      # limit = 0 means not returning individual record, saving bandwidth
       total_count = rcrossref::cr_works(filter = c(prefix = doi_prefix,
                                                    from_pub_date = as.character(start_dates[i]),
                                                    until_pub_date = as.character(end_dates[i])),
@@ -190,6 +198,15 @@ scielo_stats %>% filter(preprint_count != total_count)     # 79 rows
 sum(scielo_stats$total_count)                              # 135963
 sum(scielo_stats$preprint_count)                           # 5116
 
+
+
+# Explore OSF preprint data ----
+# OSF Preprints was established in 2017, while community-based preprint servers started in 2016
+# while these preprint servers have distinct doi prefix, in Crossref they are all listed with prefix 10.31219 for COS
+# other OSF objects (e.g., projects, registrations, components) are registered in DataCite 
+# data last pulled from OSF on 2026-11-02
+osf_stats <- crossref_count(preprint_name = "osf", doi_prefix = "10.31219",
+                            start_date = "2016-01-01", end_date = "2026-10-01")
 
 
 
