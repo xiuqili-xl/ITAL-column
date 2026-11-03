@@ -18,7 +18,7 @@ biorxiv_api_count <- read_csv("https://api.biorxiv.org/sum/m/csv", show_col_type
   select(month_label = month, biorxiv_count = new_papers)
 
 ## save a copy to file (data retrieved on 2026-10-28)
-write_csv(biorxiv_api_count, here("data_saved", "biorxiv_api_count.csv"))
+write_csv(biorxiv_api_count, here("data_Platform", "biorxiv_api_count.csv"))
 
 
 ## medRxiv API ----
@@ -27,7 +27,7 @@ medrxiv_api_count <- read_csv("https://api.medrxiv.org/sum/m/csv", show_col_type
   select(month_label = month, medrxiv_count = new_papers)
 
 ## save a copy to file (data retrieved on 2026-10-28)
-write_csv(medrxiv_api_count, here("data_saved", "medrxiv_api_count.csv"))
+write_csv(medrxiv_api_count, here("data_Platform", "medrxiv_api_count.csv"))
 
 
 

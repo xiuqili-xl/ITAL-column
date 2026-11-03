@@ -14,8 +14,9 @@ biorxiv_medrxiv_oa_df <- readRDS(here("data_temp", "biorxiv_medrxiv_openalex_cle
 ## biorxiv_medrxiv_oa_df was generated in oa02-process-data.R, after removing other CSH publications
 ## `data_temp` stores intermediate data files, not tracked by Git
 
-biorxiv_api_count <- read_csv(here("data_saved", "biorxiv_api_count.csv"))
-medrxiv_api_count <- read_csv(here("data_saved", "medrxiv_api_count.csv"))
+biorxiv_api_count <- read_csv(here("data_Platform", "biorxiv_api_count.csv"))
+medrxiv_api_count <- read_csv(here("data_Platform", "medrxiv_api_count.csv"))
+## saved as part of `oa4-compare-data-source.R` 
 
 
 ## Wrangle data ----
@@ -81,18 +82,28 @@ ggsave(filename = "bioRxiv_medRxiv_data_source_comparison.png", path = here("out
 
 
 # arxiv ----
-## Import and wrangle data ----
-arxiv_data_source_levels <- c("Platform API", "DataCite (total)", "DataCite (preprint)")
-arxiv_data_source_colors <- c("#F7B6D2", "firebrick", "salmon")
+## Import data ----
+arxiv_datacite_stats <- read_csv(here("data_DataCite", "dc_stats_arxiv_revised.csv"))
+## note, NA in total_count means that number wasn't extracted
+
+arxiv_monthly_sub <- read_csv("https://arxiv.org/stats/get_monthly_submissions")
+
+## save a copy to file (data retrieved on 2026-11-03)
+write_csv(arxiv_monthly_sub, here("data_Platform", "arxiv_api_count.csv"))
+
+
+## Wrangle data ----
+arxiv_data_source_levels <- c("Platform API", "DataCite (preprint)", "DataCite (total)")
+arxiv_data_source_colors <- c("#F7B6D2", "salmon",  "firebrick")
 names(arxiv_data_source_colors) <- arxiv_data_source_levels
 
-arxiv_monthly_sub <- read_csv("https://arxiv.org/stats/get_monthly_submissions") %>%
+arxiv_monthly_sub_graph <- arxiv_monthly_sub %>%
   mutate(year_label = str_sub(month, start = 1, end = 4), .before = month) %>%
   mutate(data_source = "Platform API",
          data_source = factor(data_source, levels = arxiv_data_source_levels))
 ## for more info, see https://arxiv.org/stats/monthly_submissions
 
-arxiv_datacite_stats <- read_csv(here("data_DataCite", "dc_stats_arxiv.csv")) %>%
+arxiv_datacite_stats_graph <- arxiv_datacite_stats %>%
   pivot_longer(cols = -starts_with("period_"), names_to = "data_source", values_to = "count") %>%
   mutate(data_source = if_else(data_source == "total_count", "DataCite (total)", "DataCite (preprint)"),
          data_source = factor(data_source, levels = arxiv_data_source_levels)) %>% 
@@ -102,12 +113,12 @@ arxiv_datacite_stats <- read_csv(here("data_DataCite", "dc_stats_arxiv.csv")) %>
 
 ## Graph data ----
 ggplot() +
-  geom_col(data = arxiv_monthly_sub %>% filter(!month %in% c("2026-10", "2026-11")),
+  geom_col(data = arxiv_monthly_sub_graph %>% filter(!month %in% c("2026-10", "2026-11")),
            mapping = aes(x = month, y = submissions, fill = data_source),
            alpha = 0.75) +
-  geom_line(data = arxiv_datacite_stats,
+  geom_line(data = arxiv_datacite_stats_graph,
             mapping = aes(x = month_label, y = count, group = data_source, color = data_source)) +
-  geom_point(data = arxiv_datacite_stats,
+  geom_point(data = arxiv_datacite_stats_graph,
              mapping = aes(x = month_label, y = count, color = data_source), size = 1) +
   scale_y_continuous(limits = c(0, 42000), expand = c(0.01, 0)) +
   scale_color_manual(values = arxiv_data_source_colors, drop = FALSE, name = "Data Source") +
@@ -125,10 +136,8 @@ ggplot() +
         panel.border = element_rect(colour = "grey70", linewidth = 0.25)) +
   labs(x = "", y = "New preprints",
        title = "arXiv data source comparison",
-       subtitle = "arXiv APIs vs DataCite")
+       subtitle = "arXiv API vs DataCite")
 
 ggsave(filename = "arxiv_data_source_comparison.png", path = here("outputs_graphs"),
        height = 4, width = 16, dpi = 300, units = "in")
-
-
 

@@ -1,6 +1,6 @@
 # From Preprint Awareness to Engagement: Expanding Library Roles
 
-This GitHub repo contains data, code, analyses, and figures supporting a [ITAL & Feature Column](https://ital.corejournals.org/index.php/ital/ital-and-column).
+This GitHub repo contains data, code, analyses, and figures supporting a [ITAL & Feature Column](https://ital.corejournals.org/index.php/ital/ital-and-column). Specifically, 
 
 > Li X, Chim M. From Preprint Awareness to Engagement: Expanding Library Roles. Information Technology and Libraries (ITAL). **Forthcoming**. [DOI to be added]
 
