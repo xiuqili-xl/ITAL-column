@@ -4,7 +4,7 @@ This GitHub repo contains data, code, analyses, and figures supporting a [ITAL &
 
 > Li X, Chim M. From Preprint Awareness to Engagement: Expanding Library Roles. Information Technology and Libraries (ITAL). **Forthcoming**. [DOI to be added]
 
-The analysis focuses on examining the growth of selected preprint servers over time. A secondary analysis compares preprint counts across different data sources.
+The main analysis examines the growth of selected preprint servers over time. A secondary analysis compares preprint counts across different data sources.
 
 <br>
 
@@ -13,15 +13,18 @@ The analysis focuses on examining the growth of selected preprint servers over t
 
 ## 📈 Preprint growth analysis
 
-* Retrieve records for selected preprint servers from OpenAlex
-* Save dated snapshots of the retrieved records
-* Clean and aggregate the records by server, year, and month
-* Visualize changes in preprint volume over time
+- Retrieve monthly counts for for selected preprint servers from [Crossref](https://www.crossref.org/) and [DataCite](https://datacite.org/)
+- Save the retrieved counts and selected metadata for inspection and reuse
+- Clean and aggregate the records by as neeed to generate monthly counts
+- Visualize changes in preprint volume from 2006 through Sep 2026
 
 
 ## 📊 Data source comparison
 
-During data validation, we noticed that OpenAlex counts for bioRxiv and medRxiv are much lower than expected. We therefore compared OpenAlex counts with counts reported directly by the bioRxiv and medRxiv APIs. [Comment on other sources when ready, e.g., Crossref]
+During data validation, we noticed that counts from different sources tend to vary. We therefore made the following comparisons to assess how coverage, classification, and date metadata affect the interpretation of preprint growhth
+
+- **bioRxiv and medRxiv:** Compare combined counts from the platform APIs, Crossref, and an earlier OpenAlex retrieval (more on the OpenAlex analysis later)
+- **arXiv**: Compare platform-reported monthly submissions with DataCite counts, including differences between all retrieved DOI records and records classified as preprints
 
 <br>
 
@@ -33,81 +36,105 @@ ITAL-column/
 ├── README.md
 ├── LICENSE
 ├── ITAL-column.Rproj
-├── code/                 # code used for analysis     
-├── data_OpenAlex/        # OpenAlex snapshots organized by preprint server
-├── data_saved/           # monthly counts saved from the bioRxiv and medRxiv APIs
+├── code/                 # current Crossref/DataCite analysis and source comparisons
+├── code_previous/        # earlier OpenAlex retrieval, processing, and analysis
+├── data_Crossref/        # saved monthly counts from Crossref
+├── data_DataCite/        # saved DataCite counts and selected arXiv metadata
+├── data_OpenAlex/        # earlier OpenAlex snapshots organized by preprint server
+├── data_Platform/        # saved counts from bioRxiv, medRxiv, and arXiv
 ├── data_temp/            # intermediate data files; excluded from version control
-├── outputs_stats/        # processed monthly counts used for plotting
-└── outputs_graphs/       # figures generated from the analysis
+├── outputs_stats/        # processed counts from the earlier OpenAlex workflow
+└── outputs_graphs/       # figures generated from the analyses
 ```
 
 ## 💻 Analysis Scripts
 
-* `01-retrieve-data.R`: Retrieves OpenAlex records using DOI prefixes associated with selected preprint servers and saves the results as dated RDS files
-* `02-process-data.R`: Combines the saved records, performs server-specific cleaning and validation, and calculates monthly counts
-* `03-graph-data.R`: Combines the monthly counts and creates the preprint growth figure
-* `04-compare-data-source.R`: Retrieves monthly counts from the bioRxiv and medRxiv APIs and compares them with OpenAlex counts.
+- `01-retrieve-data-Crossref.R`: Retrieves monthly counts by DOI prefixes, both with and without the `type = "posted-content"` filter
+- `02-retrieve-data-DataCite.R`: Retrieves monthly arXiv counts and selected metadata;  reconstructs earlier posting months for records with retrospective DOI registration in early 2022 
+- `03-graph-data.R`: Combines Crossref and DataCite counts, applies the SSRN date adjustment, and creates the preprint growth figure
+* `04-compare-data-source.R`: Creates source comparison figures for bioRxiv/medRxiv and arXiv
 
-OpenAlex records are retrieved in yearly, quarterly, monthly, or weekly segments. Breaking requests into smaller periods makes large API queries more manageable and creates identifiable snapshots of the source data.
+Scripts in `code_previous/` preserves the earlier OpenAlex workflow, including data retrieval, server-specific cleaning, monthly aggregation, and platform API comparisons.
 
 <br>
 
 
 # Methodological Decisions and Limitations
 
-## 🌐 Why use OpenAlex? 
+## 🌐 Why use Crossref and DataCite?
 
-Preprint servers differ in their APIs, available metadata, and methods of identifying records. OpenAlex offers a common metadata source, enabling a broadly consistent retrieval and aggregation workflow to be applied across multiple preprint servers. Using a common data source improves comparability, but it does **not** ensure complete or equally current coverage of different platforms.
+Crossref and Datacite provide DOI registration metadata the can be queried using common approach across selected preprint servers. The main analysis uses Crossref for the included platforms other than arXiv, whose DOI records are retrieved from DataCite. The scripts retrieves both total DOI counts and counts filtered by metadata type: `posted-content` in Crossref and `Preprint` in DataCite. The preprint monthly growth figure uses the type-filtered counts.
+
+Using DOI registration metadata enables a broadly consistent retrieval and aggregation workflow to be applied across multiple preprint servers. It's also allows future expansion to other preprint servers. Using two main data source improves comparability, but it does **not** ensure complete coverage or consistent classification across platforms. The two sources also use different date fields, which affects comparsion of monthly trend.
 
 
 ## 🗂️ Why these preprint servers?
 
-The analysis includes arXiv, bioRxiv & medRxiv, ChemRxiv, EarthArXiv, EcoEvoRxiv, Research Square, SSRN, Preprints.org, and SciELO preprints. These platforms were selected to represent preprint servers spanning different disciplines, geographic contexts, and governance models while remaining identifiable through OpenAlex data. The scripts also document platforms, including ChinaRxiv and AfricArXiv, that could not be included consistently using the same DOI-based method. Thus, this project should _**not**_ be interpreted as a comprehensive inventory of all preprint servers. For additional preprint servers, please see [ASAPbio Preprint Server Directory](https://asapbio.org/resources/preprint-server-directory/) and the [Directory of Open Access Preprint Repositories](https://doapr.coar-repositories.org/).
+The analysis includes arXiv, bioRxiv & medRxiv, ChemRxiv, EarthArXiv, EcoEvoRxiv, Research Square, SSRN, Preprints.org, OSF, and SciELO preprints. These platforms were selected to represent preprint servers spanning different disciplines, geographic contexts, and governance models. They can be queried using the selected DOI-prefix approach.
+
+The growth figure combines bioRxiv with medRxiv and EarthArxiv with EcoEvoRxiv. The OSF series represents records returned by the Crossref DOI prefix query rather than separate counts for each OSF-hosted community.
+
+The scripts also document exploration of ChinaRxiv, AfricArXiv, and Zenodo, which were not included using the current retrieval process. Thus, this project should _**not**_ be interpreted as a comprehensive inventory of all preprint servers. For additional platforms, please see [ASAPbio Preprint Server Directory](https://asapbio.org/resources/preprint-server-directory/) and the [Directory of Open Access Preprint Repositories](https://doapr.coar-repositories.org/).
 
 
 ## 🔎 Why use DOI prefix?
 
-Our preliminary exploration showed that filtering OpenAlex records by work type alone could omit relevant records because not every preprint is classified as such. Records were therefore retrieved using DOI prefixes associated with selected preprint servers, followed by server-specific cleaning when necessary.
+DOI prefix provie a practical way to identify records associated with selected preprint servers or their registering organization. The scripts combine DOI prefix queries with metadata-type filters to distinguish the selected content from other records where possible.
 
-We recognize that this method has several limitations: (1) a DOI prefix may cover publications other than preprints, (2) a preprint server may use more than one DOI prefix, (3) a platform may change DOI prefix over time, and (4) some platforms do not assign DOI to preprints.
+We recognize that this method has several limitations: (1) a DOI prefix may cover publications other than preprints, (2) a preprint server may use more than one DOI prefix, (3) a platform may change DOI prefix over time, and (4) some platforms do not assign DOI to preprints. Metadata-type filters can also omit relevant records or include content that does not correspond precisely to the intended definition of a preprint.
 
 DOI-prefix retrieval should therefore be viewed as a reproducible approximation, rather than a complete census of preprints.
 
 
-## 📸 Why preserve data snapshots?
+## 🧭 What did our earlier exploration with OpenAlex show?
 
-OpenAlex records, classifications, and coverage can change over time. Saving the retrieved records makes it possible to inspect the data underlying the published analysis even if later API queries return different results. 
+This project initially used OpenAlex as a common metadata source across preprint servers - the workflow retrieved records by DOI prefix and applied server-specific cleaning. Validation identified substantial differences between the retrieved OpenAlex counts and counts reported by individual preprint platforms. 
 
-The OpenAlex data used in the current analysis were retrieved in late Oct 2026. More specific retrieval dates are recorded in the analysis script. 
+Communication with OpenAlex support team revealed that OpenAlex merges preprint record into published record once the manuscript is published in a journal. The work's main DOI becomes the journal article's. Thus, filtering on DOI prefix of only preprint servers only finds preprints that haven't been published yet (or whose published version hasn't been linked yet). While it's possible to filter on `locations.source.id`, a merged work's publication year is the journal article's not the preprint's.
 
-Monthly counts obtained from the bioRxiv and medRxiv APIs are also saved in `data_saved/` so the comparison does not depend entirely on live API responses.
+These findings motivated the shift to Crossref and Datacite for the main preprint growth analysis. The earlier scripts and saved OpenAlex data are retained to document that exploration, and OpenAlex reamins part of the bioRxiv/medRxiv data source comparision. The comparison describes the particular retrieval strategy and snapshots used; it should _**not**_ be interpreted as a general assessment of OpenAlex coverage.
+
+
+## 📸 Why save data snapshots?
+
+Source metadata and API results can change over time. Saving the retrieved counts and selected records makes it possible to inspect the data underlying the figures even if later API queries return different results. 
+
+The repository retains monthly Crossref and Datacite counts, selected arXiv metadata used for date adjuments, earlier OpenAlex snapshots, and platform-reported counts. Retrieval dates are documented in the script where available. Most data retrieval occurred in late Oct and early Nov, 2026.
 
 
 ## 🧬 What about preprint versions and duplicate records?
 
 Preprint platforms handle versioning differently. Some retain one DOI across multiple versions, while others may create separate records or identifiers.
 
-This analysis counts the OpenAlex records returned by the specified DOI-prefix queries. It does **not** reconstruct version histories or attempt to determine if records represent different versions of the same manuscript. Counts should therefore be interpreted as records captured by the retrieval strategy, rather than definitive counts of unique manuscripts.
+The main analysis counts DOI records returned by the specified DOI-prefix and type queries. It does **not** reconstruct version histories or attempt to determine if records represent different versions of the same manuscript. Counts should therefore be interpreted as records captured by the retrieval strategy, rather than definitive counts of unique manuscripts.
 
 
-## ⚖️ Any difference between OpenAlex and platform data?
+## ⚖️ Any difference between data sources?
 
-During our analysis, we found substantial differences between OpenAlex and totals reported by individual preprint servers. 
+Yes. It's important to note that counts can differ simply because different sources measure different things: platform submissions, registered DOI records, or recrods assigned to a particular metadata type. Differences in coverage, versioning, classification, and timestamp can also affect comparisons
 
-[ADD MORE AFTER INVESTIGATION, potentially a table?]
+Date fields require particular care:
 
-Some OpenAlex records also appear to contain dates that are approximate or assigned at a broader level than the actual posting date. This is particularly important when interpreting monthly trends. For example, approximately 99.8% of the retrieved SSRN records use Jan 1 as the publication date, which may reflect year-level or default date metadata rather than the actual posting date.
+- **Crossref**: Monthly queries use publication-date filters
+- **DataCite/arXiv**: Initial queries use DOI registration dates. For records registered in Jan-Mar 2022 (when retrospective DOI registrtion happened), the workflow uses the `Available` date labeled `v1` to reconstruct posting month. Later counts retain registration months, which may be a day or two delayed, placing it in a different month
+- **SSRN**: Retrieved counts are concentrated in Jan. For plotting purposes, monthly counts are replaced with the rounded mean for that year. These values approximate monthly volume and should not be interpreted as observed monthly posting patterns.
+
+The data source comparison figures provide checks on these differences for bioRxiv/medRxiv and arXiv. They do not establish equivalent coverage or date accuracy.
 
 <br>
 
 
 # Reproducing the Analysis
 
-The analysis requires R and the `tidyverse`, `here`, `purrr`, `openalexR`, `usethis`, `janitor`, and `data.table` packages. Open the `ITAL-column.Rproj` project before running the scripts.
+The current analysis uses R and the `tidyverse`, `here`, `rcrossref`, and `rdatacite` packages. The Crossref setup also uses `usethis`. Open the `ITAL-column.Rproj` project before running the scripts.
 
-Retrieving fresh OpenAlex records requires an API key configured as `openalexR.apikey` in `.Renviron`. Readers who only want to inspect the archived data and outputs do not need an OpenAlex API key.
+For fresh retrievals, run the Crossref and DataCite scripts before the plotting and comparison scripts. The Crossref script includes instructions for configuring an email address in `.Renviron` for polite-pool requests.
 
-OpenAlex is continuously updated, so newly retrieved records may _**not**_ produce exactly the same counts as the archived data. The saved snapshots document the records used for this analysis.
+The scripts currently contain interactive setup, exploratory code, and intermediate processing steps, so they should be reviewed and run section by section. The bioRxiv/medRxiv comparison also requires the cleaned OpenAlex intermediate file generated by `code_previous/oa2-process-data.R`. Because this file is stored in the untracked `data_temp/` directory, it must be regenerated when absent.
+
+Re-running the earlier OpenAlex retrieval requires `openalexR` and an API key configured as `openalexR.apikey` in `.Renviron`. An OpenAlex API key is not needed for the main Crossref/DataCite retrieval or for inspecting saved outputs.
+
+New API queries may _**not**_ reproduce the archived counts exactly because source metadata and coverage change over time.
 
 <br>
 
@@ -116,7 +143,7 @@ OpenAlex is continuously updated, so newly retrieved records may _**not**_ produ
 
 The code in this repository is available under the [BSD 3 License](LICENSE).
 
-Data retrieved from OpenAlex, bioRxiv, medRxiv, and other sources may be subject to the terms and licenses of their respective providers.
+Data retrieved from Crossref, DataCite, OpenAlex, bioRxiv, medRxiv, arXiv, and other sources may be subject to the terms and licenses of their respective providers.
 
 <br>
 
