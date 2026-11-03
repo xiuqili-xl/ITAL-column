@@ -8,7 +8,7 @@ library(here)
 # Import data ---
 ## OpenAlex data ----
 biorxiv_medrxiv_oa_df <- readRDS(here("data_temp", "biorxiv_medrxiv_openalex_cleaned.rds"))
-## biorxiv_medrxiv_oa_df was generated in 02-process-data.R, after removing other CSH publications
+## biorxiv_medrxiv_oa_df was generated in oa02-process-data.R, after removing other CSH publications
 ## `data_temp` stores intermediate data files, not tracked by Git
 
 
