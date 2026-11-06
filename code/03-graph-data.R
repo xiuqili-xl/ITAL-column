@@ -96,5 +96,5 @@ ggplot(data = preprint_stats_combined %>% filter(publication_year > 2005),
   labs(y = "Number of preprints", fill = "Preprint server")
 
 ggsave(filename = "preprint_growth_monthly_Crossref_DataCite.png", path = here("outputs_graphs"),
-       height = 4.5, width = 8, dpi = 300, units = "in")
+       height = 4.5, width = 8.5, dpi = 300, units = "in")
 
