@@ -8,6 +8,8 @@ The main analysis examines the growth of selected preprint servers over time. A 
 
 <br>
 
+![Monthly preprint submissions across selected preprint platforms between Jan 2006 and Sep 2026](outputs_graphs/preprint_growth_monthly_Crossref_DataCite.png)
+
 <br>
 
 
