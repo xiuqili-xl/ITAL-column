@@ -136,7 +136,8 @@ The scripts currently contain interactive setup, exploratory code, and intermedi
 
 Re-running the earlier OpenAlex retrieval requires `openalexR` and an API key configured as `openalexR.apikey` in `.Renviron`. An OpenAlex API key is not needed for the main Crossref/DataCite retrieval or for inspecting saved outputs.
 
-New API queries may _**not**_ reproduce the archived counts exactly because source metadata and coverage change over time.
+> [!IMPORTANT]  
+> New API queries may _**not**_ reproduce the archived counts exactly because source metadata and coverage change over time.
 
 <br>
 
