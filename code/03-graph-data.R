@@ -96,24 +96,5 @@ ggplot(data = preprint_stats_combined %>% filter(publication_year > 2005),
   labs(y = "Number of preprints", fill = "Preprint server")
 
 ggsave(filename = "preprint_growth_monthly_Crossref_DataCite.png", path = here("outputs_graphs"),
-       height = 4, width = 8, dpi = 300, units = "in")
+       height = 4.5, width = 8, dpi = 300, units = "in")
 
-
-
-
-
-library(pals)
-pal.bands(alphabet, alphabet2, cols25, glasbey, kelly, okabe, polychrome, 
-          stepped, stepped2, stepped3, tableau20, tol, tol.groundcover,
-          watlington, show.names=FALSE)
-tol()
-tableau20()
-"#1F77B4" "#AEC7E8" "#FF7F0E" "#FFBB78" "#2CA02C" "#98DF8A" "#D62728" "#FF9896" "#9467BD" "#C5B0D5"
-[11] "#8C564B" "#C49C94" "#E377C2" "#F7B6D2" "#7F7F7F" "#C7C7C7" "#BCBD22" "#DBDB8D" "#17BECF" "#9EDAE5"
-
-
-"#1F77B4", "#AEC7E8", "#17BECF", "#9EDAE5", 
-"#FFBB78", "#D62728", "#FF9896", "#9467BD", "#C5B0D5"
-
-"#332288", "#6699CC", "#88CCEE", "#44AA99",
-"#117733", "#999933", "#DDCC77", "#661100", "#CC6677
