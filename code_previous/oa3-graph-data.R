@@ -68,9 +68,3 @@ ggplot(data = preprint_data %>% filter(publication_year >= 2010),
 ggsave(filename = "preprint_growth_monthly_OpenAlex.png", path = here("outputs_graphs"),
        height = 4, width = 8, dpi = 300, units = "in")
 
-
-# Next steps: 
-# Add arXiv data to plot
-# Change color scheme
-
-
