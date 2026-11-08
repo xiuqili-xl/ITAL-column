@@ -32,7 +32,7 @@ arxiv_data <- load_preprint_data(subdirectory = "arxiv")
 arxiv_data %>% count(publication_year)           # doi prefix: 10.48550
 
 ## sanity check
-nrow(arxiv_data)                                 # 1,040,018
+nrow(arxiv_data)                                 # 1,175,310
 count(arxiv_data, journal_title, sort = TRUE)    # mostly are attributed to arXiv (996,285)
 count(arxiv_data, article_type, sort = TRUE)     # mostly are tagged as preprints (1,015,662)
 

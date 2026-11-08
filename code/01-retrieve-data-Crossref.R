@@ -161,7 +161,7 @@ sum(researchsquare_stats$preprint_count)                          # 522290
 
 # Retrieve data for SSRN ----
 # SSRN was established in 1994, and was acquired by Elsevier in 2016 
-# data last pulled form Crossref on 2026-11-28
+# data last pulled form Crossref on 2026-10-28
 # on the same day, SSRN reports 2,864,872 total citations and 1,992,503 full-text papers,
 # including those from Oct/Nov 2026
 ssrn_stats <- crossref_count(preprint_name = "ssrn", doi_prefix = "10.2139", 

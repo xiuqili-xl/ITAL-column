@@ -50,7 +50,7 @@ ggplot(data = preprint_data %>% filter(publication_year >= 2010),
   geom_col() +
   facet_grid(~ publication_year, scales="free", space="free_x", switch="both") +
   scale_x_discrete(name = NULL) +
-  scale_y_continuous(expand = 0.01, limits = c(0, 41000)) +
+  scale_y_continuous(expand = 0.01, limits = c(0, 54000)) +
   theme_bw() +
   theme(panel.grid.major.y = element_line(color = "grey90", linewidth = 0.15),
         panel.grid.minor.y = element_line(color = "grey90", linewidth = 0.15),
@@ -63,10 +63,9 @@ ggplot(data = preprint_data %>% filter(publication_year >= 2010),
         legend.position = "top",
         legend.justification.top = "left") +
   guides(fill = guide_legend(nrow = 2)) +        # use byrow = TRUE to order top to bottom
-  labs(y = "Number of preprints", fill = "Preprint server",
-       caption = "Note to self: still missing ArXiv data")
+  labs(y = "Number of preprints", fill = "Preprint server")
 
-ggsave(filename = "preprint_growth_over_the_years.png", path = here("outputs_graphs"),
+ggsave(filename = "preprint_growth_monthly_OpenAlex.png", path = here("outputs_graphs"),
        height = 4, width = 8, dpi = 300, units = "in")
 
 

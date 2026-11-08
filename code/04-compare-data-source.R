@@ -10,9 +10,7 @@ library(here)
 # bioRxiv and medRxiv ----
 ## Import data ----
 cr_openarxiv_count <- read_csv(here("data_Crossref", "cr_stats_biorxiv_medrxiv.csv"))
-biorxiv_medrxiv_oa_df <- readRDS(here("data_temp", "biorxiv_medrxiv_openalex_cleaned.rds"))
-## biorxiv_medrxiv_oa_df was generated in oa02-process-data.R, after removing other CSH publications
-## `data_temp` stores intermediate data files, not tracked by Git
+openalex_count <- read_csv(here("outputs_stats", "biorxiv_medrxiv_openalex_stats.csv"))
 
 biorxiv_api_count <- read_csv(here("data_Platform", "biorxiv_api_count.csv"))
 medrxiv_api_count <- read_csv(here("data_Platform", "medrxiv_api_count.csv"))
@@ -31,10 +29,9 @@ platform_stats <- biorxiv_api_count %>%
   mutate(data_source = "Platform API",
          data_source = factor(data_source, levels = data_source_levels))
 
-openalex_stats <- biorxiv_medrxiv_oa_df %>%
-  mutate(month_label = paste(publication_year, sprintf("%02d", publication_month), sep = "-")) %>%
-  count(month_label, name = "oa_count") %>%
-  mutate(year_label = str_sub(month_label, start = 1, end = 4), .before = month_label) %>%
+openalex_stats <- openalex_count %>%
+  mutate(month_label = paste(publication_year, sprintf("%02d", publication_month), sep = "-"), .before = n) %>%
+  rename(year_label = publication_year, oa_count = n) %>%
   mutate(data_source = "OpenAlex (doi prefix)",
          data_source = factor(data_source, levels = data_source_levels))
 
@@ -113,7 +110,7 @@ arxiv_datacite_stats_graph <- arxiv_datacite_stats %>%
 
 ## Graph data ----
 ggplot() +
-  geom_col(data = arxiv_monthly_sub_graph %>% filter(!month %in% c("2026-10", "2026-11")),
+  geom_col(data = arxiv_monthly_sub_graph %>% filter(ym(month) < ymd("2026-10-01")),
            mapping = aes(x = month, y = submissions, fill = data_source),
            alpha = 0.75) +
   geom_line(data = arxiv_datacite_stats_graph,

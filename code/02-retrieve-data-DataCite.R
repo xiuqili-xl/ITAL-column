@@ -143,22 +143,28 @@ arxiv_2022Q1 <- bind_rows(lapply(file_paths[1:3], readRDS)) %>%
 
 arxiv_2022Q1 %>%
   mutate(registered = str_sub(registered, start = 1, end = 7)) %>%
-  count(registered)                                  # matches preprint counts in dc_stats_arxiv.csv
+  count(registered)                                  
+# matches preprint counts in dc_stats_arxiv.csv
 
 arxiv_2022Q1_cleaned <- arxiv_2022Q1 %>%
   mutate(registered = str_sub(registered, start = 1, end = 10)) %>%
   unnest(dates) %>%
   filter(dateType == "Available", dateInformation == "v1") %>% 
   distinct(doi, registered, date)
-nrow(arxiv_2022Q1_cleaned) == nrow(arxiv_2022Q1)    # TRUE, suggesting 1 and only 1 Available date   
+nrow(arxiv_2022Q1_cleaned) == nrow(arxiv_2022Q1)    
+# TRUE, suggesting 1 and only 1 Available date   
 
 arxiv_datacite_stats_earlier <- arxiv_2022Q1_cleaned %>% 
   count(date, name = "preprint_count") %>%
   mutate(period_start = ymd(paste0(date, "-01")),
          period_end = lead(period_start) - 1,
+         period_end = if_else(period_start == ymd("2022-03-01"), ymd("2022-03-31"), period_end),
          total_count = NA) %>%
   select(period_start, period_end, total_count, preprint_count)
-sum(arxiv_datacite_stats_rev$preprint_count)        # 873758
+sum(arxiv_datacite_stats_earlier$preprint_count)        # 873758
+
+# import original stats
+arxiv_datacite_stats <- read_csv(here("data_DataCite", "dc_stats_arxiv.csv"))
 
 arxiv_datacite_stats_revised <- arxiv_datacite_stats %>%
   filter(period_start >= ymd("2022-04-01")) %>%
@@ -187,7 +193,7 @@ arxiv_2022Q2_cleaned %>%
 
 
 # examine records from 2026 Apr, May, Jun
-arxiv_2026Q2 <- bind_rows(lapply(file_paths[4:6], readRDS)) %>%
+arxiv_2026Q2 <- bind_rows(lapply(file_paths[7:9], readRDS)) %>%
   select(doi, registered, dates) 
 
 arxiv_2026Q2_cleaned <- arxiv_2026Q2 %>%
