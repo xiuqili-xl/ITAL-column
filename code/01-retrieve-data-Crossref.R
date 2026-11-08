@@ -84,7 +84,7 @@ crossref_count <- function(preprint_name, doi_prefix, start_date, end_date){
 
 # Note about arXiv ----
 # arXiv (doi prefix 10.48550) is registered with DataCite, so crossref_count() won't work
-# see XXX for code used to pull arXiv data from DataCite
+# see `code/02-retrieve-data-DataCite.R` for code used to pull arXiv data from DataCite
 
 
 
@@ -106,7 +106,7 @@ biorxiv_medrxiv_stats <- crossref_count(preprint_name = "biorxiv_medrxiv", doi_p
 
 biorxiv_medrxiv_stats %>% filter(preprint_count != total_count)   
 # 0 rows, meaning all items are labeled as "posted-content"
-# for comparison to bioRxiv/medRxiv API data, see XXXX
+# for comparison to bioRxiv/medRxiv API data, see `code/04-compare-data-source.R`
 
 
 

@@ -46,7 +46,7 @@ write_csv(arxiv_stats, here("outputs_stats", "arxiv_openalex_stats.csv"))
 
 # Process bioRxiv and medRxiv data -----
 ## data last pulled from OpenAlex on 2026-10-26
-## for comparison with data from bioRxiv/medRxiv API, see XXX
+## for comparison with data from bioRxiv/medRxiv API, see `code_previous/oa4-compare-data-source.R`
 biorxiv_medrxiv_data <- load_preprint_data(subdirectory = "biorxiv_medrxiv")
 openrxiv_data <- load_preprint_data(subdirectory = "openrxiv")
 
