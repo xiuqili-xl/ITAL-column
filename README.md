@@ -74,9 +74,9 @@ Using DOI registration metadata enables a broadly consistent retrieval and aggre
 
 ## 🗂️ Why these preprint servers?
 
-The analysis includes arXiv, bioRxiv & medRxiv, ChemRxiv, EarthArXiv, EcoEvoRxiv, Research Square, SSRN, Preprints.org, OSF, and SciELO preprints. These platforms were selected to represent preprint servers spanning different disciplines, geographic contexts, and governance models. They can be queried using the selected DOI-prefix approach. The growth figure combines bioRxiv with medRxiv and EarthArxiv with EcoEvoRxiv. The OSF series represents records returned by the Crossref DOI prefix query rather than separate counts for each OSF-hosted community.
+The analysis includes arXiv, bioRxiv & medRxiv, ChemRxiv, EarthArXiv, EcoEvoRxiv, Research Square, SSRN, Preprints.org, OSF, and SciELO preprints. **These platforms were selected to represent preprint servers spanning different disciplines, geographic contexts, and governance models.** They can be queried using the selected DOI-prefix approach. The growth figure combines bioRxiv with medRxiv and EarthArxiv with EcoEvoRxiv. The OSF series represents records returned by the Crossref DOI prefix query rather than separate counts for each OSF-hosted community.
 
-The scripts also document exploration of ChinaRxiv, AfricArXiv, and Zenodo, which are not included in the current analysis. Thus, this project should _**not**_ be interpreted as a comprehensive inventory of all preprint servers. For additional preprint platforms, please see [ASAPbio Preprint Server Directory](https://asapbio.org/resources/preprint-server-directory/) and the [Directory of Open Access Preprint Repositories](https://doapr.coar-repositories.org/).
+The scripts also document exploration of ChinaRxiv, AfricArXiv, and Zenodo, which are not included in the current visualization. Thus, this project should _**not**_ be interpreted as a comprehensive inventory of all preprint servers. For additional preprint platforms, please see [ASAPbio Preprint Server Directory](https://asapbio.org/resources/preprint-server-directory/) and the [Directory of Open Access Preprint Repositories](https://doapr.coar-repositories.org/).
 
 
 ## 🔎 Why use DOI prefix?
@@ -85,23 +85,23 @@ DOI prefixes provide a practical way to identify records associated with selecte
 
 We recognize that this method has several limitations: (1) a DOI prefix may cover publications other than preprints, (2) a preprint server may use more than one DOI prefix, (3) a platform may change DOI prefix over time, and (4) some platforms do not assign DOI to preprints. Metadata-type filters can also omit relevant records or include content that does not correspond precisely to the intended definition of a preprint.
 
-DOI-prefix retrieval should therefore be viewed as a reproducible approximation, rather than a complete census of preprints.
+**DOI-prefix retrieval should therefore be viewed as a reproducible approximation, rather than a complete census of preprints.**
 
 
 ## 🧭 What did our earlier exploration with OpenAlex show?
 
-This project initially used OpenAlex as a common metadata source across preprint servers (see `code_previous`). That workflow retrieved records by DOI prefix and applied server-specific cleaning. However, during data validation, we observed substantial differences between the retrieved OpenAlex counts vs counts reported by individual preprint platforms. 
+We initially used OpenAlex as a common metadata source across preprint servers (see `code_previous`). That workflow retrieved records by DOI prefix and applied server-specific cleaning. However, during data validation, we observed substantial differences between the retrieved OpenAlex counts vs counts reported by individual preprint platforms. 
 
 Communication with the OpenAlex Support Team revealed that OpenAlex merges preprint records into published records once the manuscript is published in a journal. The work's main DOI becomes the journal article's. Thus, filtering on DOI prefixes of only preprint servers finds only preprints that haven't been published yet (or whose published version hasn't been linked yet). While it's possible to filter on `locations.source.id`, a merged work's publication year is the journal article's, not the preprint's.
 
-These findings motivated our shift to Crossref and Datacite for the main preprint growth analysis. The earlier scripts and saved OpenAlex data are retained to document our initial exploration and workflow. The resulting OpenAlex dataset remains part of the bioRxiv/medRxiv data source comparison - this comparison describes the particular retrieval strategy and snapshots used; it should _**not**_ be interpreted as a general assessment of OpenAlex coverage.
+**These findings motivated our shift to Crossref and Datacite for the main preprint growth analysis**. The earlier scripts and saved OpenAlex data are retained to document our initial exploration and workflow. The resulting OpenAlex dataset remains part of the bioRxiv/medRxiv data source comparison - this comparison describes the particular retrieval strategy and snapshots used; it should _**not**_ be interpreted as a general assessment of OpenAlex coverage.
 
 
 ## 📸 Why save data snapshots?
 
-Source metadata and API results can change over time. Saving the retrieved counts and selected records makes it possible to inspect the data underlying the figures even if later API queries return different results. 
+Source metadata and API results can change over time. Saving the retrieved counts and selected records makes it possible to inspect the data underlying the figures even if later API queries return different results in the future. 
 
-The repository retains monthly Crossref and Datacite counts, selected arXiv metadata used for date adjustments, earlier OpenAlex snapshots, and platform-reported counts. Most data retrieval occurred in late Oct and early Nov, 2026 - specific retrieval dates are documented in the script where available. 
+This repository retains monthly Crossref and Datacite counts, selected arXiv metadata used for date adjustments, earlier OpenAlex snapshots, and platform-reported counts. Most data retrieval occurred in late Oct and early Nov 2026 - specific retrieval dates are documented in the script where available. 
 
 
 ## 🧬 What about preprint versions and retractions?
@@ -113,7 +113,7 @@ The main analysis counts DOI records returned by the specified DOI-prefix and ty
 
 ## ⚖️ Any difference between data sources?
 
-Yes. It's important to note that counts can differ simply because different sources measure different things: platform submissions, registered DOI records, or records assigned to a particular metadata type. Differences in coverage, versioning, classification, and timestamp can also affect comparisons
+Yes. It's important to note that counts can differ simply because different sources measure different things: platform submissions, registered DOI records, or records assigned to a particular metadata type. Differences in coverage, versioning, classification, and timestamp can also affect comparisons.
 
 Date fields require particular care:
 
